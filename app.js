@@ -25,7 +25,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 
 app.get('/', function(req, res){
-	res.render('index');
+	pg.connect(connect, function(err, client, done){
+		if(err){
+			return console.log('error fetching client from pool', err);
+		}
+		client.query('SELECT * FROM recipes',function(err, result){
+		
+		if(err){
+			return console.log('error running query', err);
+		}
+		res.render('index', {recipes: result.rows});
+		done();
+	});
+	});
 });
 
 //Server 
